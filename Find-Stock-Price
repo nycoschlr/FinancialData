@@ -1,0 +1,44 @@
+#REQUIREMENTS
+
+import time
+from selenium import webdriver
+from bs4 import BeautifulSoup
+from selenium.webdriver.chrome.options import Options
+options = Options()
+options.add_argument("--headless")
+
+#MARKET STATUT
+browser = webdriver.Chrome('C:\\your path to chromedriver',options=options)
+
+browser.get('http://www.isnasdaqopen.com/')
+
+time.sleep(2)
+
+open = browser.find_element_by_xpath('//*[@id="status"]').text
+date = browser.find_element_by_xpath('//*[@id="timeUntilNextStatus"]').text
+
+
+if open == "OPEN":
+    print("The Market is OPEN")
+    print(f"The Stock Exchange will be closed in {date}")
+else:
+    print("The Market is CLOSED")
+    print(f"The Stock Exchange will be open in {date}")
+
+browser.quit()
+
+#QUOTES PRICES
+browser = webdriver.Chrome('C:\\your path to chromedriver',options=options)
+quote = ["JAMF","AAPL","AMZN]
+prices = []
+
+for ticker in quote:
+    browser.get(f"https://finance.yahoo.com/quote/{ticker}?p={ticker}&.tsrc=fin-srch")
+    soup = BeautifulSoup(browser.page_source, "lxml")
+    price = soup.find(id="quote-market-notice").find_parent().find("span").text
+    prices.append(price)
+    print(prices)
+    browser.quit()
+
+list_final = list(zip(quote, prices))
+print(list_final)
